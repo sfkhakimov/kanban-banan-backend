@@ -4,6 +4,7 @@ import { UserEntity } from 'modules/user/user.entity'
 import { Repository } from 'typeorm'
 import { CreateUserDto } from 'modules/user/dto/createUserDto'
 import { ERROR_DUPLICATE_USER } from 'common/constants/errors'
+import { UserInterface } from 'modules/user/types/user.interface'
 
 @Injectable()
 export class UserService {
@@ -11,8 +12,24 @@ export class UserService {
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>,
     ) {}
-    async getUser() {
-        return 'Получение юзера'
+    async getUser(user?: UserInterface): Promise<UserInterface> {
+        return await this.userRepository.findOne({ email: user.email })
+    }
+
+    async getUserByEmail(email: string) {
+        return await this.userRepository.findOne(
+            { email },
+            {
+                select: [
+                    'id',
+                    'email',
+                    'firstName',
+                    'lastName',
+                    'roles',
+                    'password',
+                ],
+            },
+        )
     }
 
     async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
@@ -30,6 +47,10 @@ export class UserService {
         const newUser = new UserEntity()
         Object.assign(newUser, createUserDto)
 
-        return this.userRepository.save(newUser)
+        const user = await this.userRepository.save(newUser)
+
+        delete user.password
+
+        return user
     }
 }
