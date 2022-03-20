@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
-import { LocalAuthGuard } from 'modules/auth/local.auth.guard'
+import { LocalAuthGuard } from 'modules/auth/guards/local.auth.guard'
 import { AuthService } from 'modules/auth/auth.service'
 import { ExpressRequestInterface } from 'modules/user/types/userRquest.interface'
 

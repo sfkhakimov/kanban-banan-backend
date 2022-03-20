@@ -3,8 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { UserEntity } from 'modules/user/user.entity'
 import { Repository } from 'typeorm'
 import { CreateUserDto } from 'modules/user/dto/createUserDto'
-import { ERROR_DUPLICATE_USER } from 'common/constants/errors'
+import {
+    ERROR_DUPLICATE_USER,
+    ERROR_NOT_FOUND_USER_BY_ID,
+} from 'common/constants/errors'
 import { UserInterface } from 'modules/user/types/user.interface'
+import { hash } from 'bcrypt'
+import { SALT } from 'config/env'
 
 @Injectable()
 export class UserService {
@@ -12,6 +17,7 @@ export class UserService {
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>,
     ) {}
+
     async getUser(user?: UserInterface): Promise<UserInterface> {
         return await this.userRepository.findOne({ email: user.email })
     }
@@ -52,5 +58,31 @@ export class UserService {
         delete user.password
 
         return user
+    }
+
+    async updateUser(
+        body: Partial<CreateUserDto>,
+        id?: number,
+    ): Promise<UserInterface> {
+        const user = await this.userRepository.findOne({ id })
+
+        if (!user) {
+            throw new HttpException(
+                ERROR_NOT_FOUND_USER_BY_ID,
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+
+        if (body.password) {
+            body.password = await hash(body.password, SALT)
+        }
+
+        Object.assign(user, body)
+
+        const savedUser = await this.userRepository.save(user)
+
+        delete savedUser.password
+
+        return savedUser
     }
 }
