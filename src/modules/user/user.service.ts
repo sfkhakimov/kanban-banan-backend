@@ -18,6 +18,10 @@ export class UserService {
         private readonly userRepository: Repository<UserEntity>,
     ) {}
 
+    async getUserById(id: number): Promise<UserInterface> {
+        return await this.userRepository.findOne({ id })
+    }
+
     async getUser(user?: UserInterface): Promise<UserInterface> {
         return await this.userRepository.findOne({ email: user.email })
     }

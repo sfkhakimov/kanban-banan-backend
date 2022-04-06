@@ -1,2 +1,6 @@
-export const USER_ROLE = 'USER_ROLE'
-export const ADMIN_ROLE = 'ADMIN_ROLE'
+export enum UserRolesEnum {
+    UserRole = 'USER_ROLE',
+}
+export enum AdminRolesEnum {
+    AdminRole = 'ADMIN_ROLE',
+}
