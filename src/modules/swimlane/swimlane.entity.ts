@@ -1,5 +1,12 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import {
+    Column,
+    Entity,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+} from 'typeorm'
 import { CardEntity } from 'modules/card/card.entity'
+import { ProjectEntity } from 'modules/project/project.entity'
 
 @Entity({ name: 'swimlanes' })
 export class SwimlaneEntity {
@@ -14,4 +21,7 @@ export class SwimlaneEntity {
 
     @OneToMany(() => CardEntity, (card) => card.swimlane)
     cards: CardEntity[]
+
+    @ManyToOne(() => ProjectEntity, (project) => project.swimlanes)
+    project: ProjectEntity
 }

@@ -1,9 +1,8 @@
 import {
     Column,
     Entity,
-    JoinTable,
-    ManyToMany,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm'
 import { UserEntity } from 'modules/user/user.entity'
@@ -24,7 +23,6 @@ export class ProjectEntity {
     @ManyToOne(() => UserEntity, (user) => user.projects)
     author: UserInterface
 
-    @ManyToMany(() => SwimlaneEntity)
-    @JoinTable()
+    @OneToMany(() => SwimlaneEntity, (swimlane) => swimlane.project)
     swimlanes: SwimlaneEntity[]
 }

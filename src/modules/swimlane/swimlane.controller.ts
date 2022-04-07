@@ -6,6 +6,7 @@ import {
     UsePipes,
     ValidationPipe,
     Request,
+    Param,
 } from '@nestjs/common'
 import { JwtAuthGuard } from 'modules/auth/guards/jwt.auth.guard'
 import { SwimlaneService } from 'modules/swimlane/swimlane.service'
@@ -18,11 +19,12 @@ export class SwimlaneController {
 
     @UseGuards(JwtAuthGuard)
     @UsePipes(new ValidationPipe())
-    @Post('create')
+    @Post('create/:id')
     async createSwimlane(
         @Request() req: ExpressRequestInterface,
         @Body() body: CreateSwimlaneDto,
+        @Param('id') id: number,
     ) {
-        return await this.swimlaneService.createSwimlane(req.user, body)
+        return await this.swimlaneService.createSwimlane(req.user, body, id)
     }
 }

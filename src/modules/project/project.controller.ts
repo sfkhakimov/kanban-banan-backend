@@ -22,20 +22,20 @@ export class ProjectController {
 
     @Get()
     @UseGuards(JwtAuthGuard)
-    async getProjects(
+    async findProjects(
         @Request() req: ExpressRequestInterface,
         @Param() params: PaginationQueryType,
     ) {
-        return await this.projectService.getProjects(req.user, params)
+        return await this.projectService.findProjects(req.user, params)
     }
 
     @Get(':id')
     @UseGuards(JwtAuthGuard)
-    async getProject(
+    async findProject(
         @Request() req: ExpressRequestInterface,
         @Param('id') id: number,
     ) {
-        return await this.projectService.getProject(req.user, id)
+        return await this.projectService.findProject(req.user, id)
     }
 
     @Post()

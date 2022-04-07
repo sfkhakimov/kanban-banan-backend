@@ -16,7 +16,7 @@ export class ProjectService {
         private readonly userService: UserService,
     ) {}
 
-    async getProjects(user: UserInterface, params: PaginationQueryType) {
+    async findProjects(user: UserInterface, params: PaginationQueryType) {
         const { limit = 10, page = 1 } = params
 
         const projects = await this.projectRepository
@@ -40,12 +40,13 @@ export class ProjectService {
         }
     }
 
-    async getProject(user: UserInterface, id: number) {
+    async findProject(user: UserInterface, id: number) {
         return await this.projectRepository
             .createQueryBuilder()
             .select('project')
             .from(ProjectEntity, 'project')
-            .where('project.author.id = :id', { id: user.id })
+            .where('project.id = :projectId', { projectId: id })
+            .andWhere('project.author.id = :userId', { userId: user.id })
             .getOne()
     }
 
