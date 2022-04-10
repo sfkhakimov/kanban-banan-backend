@@ -7,6 +7,7 @@ import { CardModule } from 'modules/card/card.module'
 import { FileModule } from 'modules/file/file.module'
 import { SwimlaneModule } from 'modules/swimlane/swimlane.module'
 import { ProjectModule } from './modules/project/project.module';
+import { EntityFieldModule } from './modules/entity-field/entity-field.module';
 
 @Module({
     imports: [
@@ -17,6 +18,7 @@ import { ProjectModule } from './modules/project/project.module';
         FileModule,
         SwimlaneModule,
         ProjectModule,
+        EntityFieldModule,
     ],
 })
 export class AppModule {}

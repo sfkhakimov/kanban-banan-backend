@@ -9,5 +9,6 @@ import { ProjectModule } from 'modules/project/project.module'
     imports: [TypeOrmModule.forFeature([SwimlaneEntity]), ProjectModule],
     controllers: [SwimlaneController],
     providers: [SwimlaneService],
+    exports: [SwimlaneService],
 })
 export class SwimlaneModule {}

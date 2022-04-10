@@ -2,6 +2,7 @@ import {
     BeforeInsert,
     Column,
     Entity,
+    ManyToMany,
     OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm'
@@ -44,5 +45,8 @@ export class UserEntity {
     cards: CardEntity[]
 
     @OneToMany(() => ProjectEntity, (project) => project.author)
+    createdProjects: ProjectEntity[]
+
+    @ManyToMany(() => ProjectEntity, (project) => project.users)
     projects: ProjectEntity[]
 }

@@ -1,5 +1,12 @@
-import { IsEnum, IsString } from 'class-validator'
+import { IsArray, IsEnum, IsString } from 'class-validator'
 import { CardTypeEnum, ColumnEnum } from 'modules/card/constants/enum'
+import { UserInterface } from 'modules/user/types/user.interface'
+
+type Field = {
+    label: string
+    description: string
+    value: UserInterface | null
+}
 
 export class UpdateCardDto {
     @IsString()
@@ -13,4 +20,7 @@ export class UpdateCardDto {
 
     @IsEnum(ColumnEnum)
     status: ColumnEnum
+
+    @IsArray()
+    fields: Field[]
 }

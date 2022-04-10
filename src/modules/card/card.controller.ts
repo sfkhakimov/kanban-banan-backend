@@ -20,12 +20,12 @@ import { UpdateCardDto } from 'modules/card/dto/updateCard.dto'
 import { CardEntity } from 'modules/card/card.entity'
 import { ResponseType } from 'common/types/ResponseType'
 
-@Controller('card')
+@Controller()
 export class CardController {
     constructor(private readonly cardService: CardService) {}
 
     @UseGuards(JwtAuthGuard)
-    @Get(':id')
+    @Get('card/:id')
     async getCard(
         @Param('id', ParseIntPipe) id: number,
         @Request() req: ExpressRequestInterface,
@@ -34,17 +34,18 @@ export class CardController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Post()
+    @Post('card/:id')
     @UsePipes(new ValidationPipe())
     async createCard(
         @Request() req: ExpressRequestInterface,
         @Body() createCardDto: CreateCardDto,
+        @Param('id') id: number,
     ): Promise<CardEntity> {
-        return this.cardService.createCard(createCardDto, req.user)
+        return this.cardService.createCard(createCardDto, req.user, id)
     }
 
     @UseGuards(JwtAuthGuard)
-    @Put(':id')
+    @Put('card/:id')
     @UsePipes(new ValidationPipe())
     async updateCard(
         @Param('id', ParseIntPipe) id: number,
@@ -54,7 +55,7 @@ export class CardController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Delete(':id')
+    @Delete('card/:id')
     async deleteCard(
         @Param('id', ParseIntPipe) id: number,
     ): Promise<ResponseType> {

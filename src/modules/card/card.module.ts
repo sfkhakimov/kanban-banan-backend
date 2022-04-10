@@ -3,9 +3,10 @@ import { CardController } from './card.controller'
 import { CardService } from './card.service'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { CardEntity } from 'modules/card/card.entity'
+import { SwimlaneModule } from 'modules/swimlane/swimlane.module'
 
 @Module({
-    imports: [TypeOrmModule.forFeature([CardEntity])],
+    imports: [TypeOrmModule.forFeature([CardEntity]), SwimlaneModule],
     controllers: [CardController],
     providers: [CardService],
     exports: [CardService],

@@ -34,4 +34,27 @@ export class SwimlaneService {
 
         return await this.swimlaneRepository.save(swimlane)
     }
+
+    async updateSwimlane(
+        user: UserInterface,
+        body: CreateSwimlaneDto,
+        id: number,
+    ) {
+        const swimlane = await this.swimlaneRepository.findOne({ id })
+
+        if (!swimlane) {
+            throw new HttpException(ENTITY_NOT_FOUND, HttpStatus.NOT_FOUND)
+        }
+
+        Object.assign(swimlane, body)
+
+        return await this.swimlaneRepository.save(swimlane)
+    }
+
+    async findSwimlaneById(user: UserInterface, id: number) {
+        return await this.swimlaneRepository.findOne(
+            { id },
+            { relations: ['project', 'project.fields'] },
+        )
+    }
 }

@@ -8,6 +8,7 @@ import {
     Request,
     ValidationPipe,
     Put,
+    Param,
 } from '@nestjs/common'
 import { UserService } from 'modules/user/user.service'
 import { CreateUserDto } from 'modules/user/dto/createUserDto'
@@ -16,17 +17,17 @@ import { JwtAuthGuard } from 'modules/auth/guards/jwt.auth.guard'
 import { ExpressRequestInterface } from 'modules/user/types/userRquest.interface'
 import { UpdateUserDto } from 'modules/user/dto/updateUserDto'
 
-@Controller('user')
+@Controller()
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @UseGuards(JwtAuthGuard)
-    @Get()
+    @Get('user')
     async getUser(@Request() req: ExpressRequestInterface) {
         return await this.userService.getUser(req.user)
     }
 
-    @Post()
+    @Post('user')
     @UsePipes(new ValidationPipe())
     async createUser(
         @Body() createUserDto: CreateUserDto,
@@ -36,7 +37,7 @@ export class UserController {
 
     @UseGuards(JwtAuthGuard)
     @UsePipes(new ValidationPipe())
-    @Put()
+    @Put('user')
     async updateUser(
         @Request() req: ExpressRequestInterface,
         @Body() body: UpdateUserDto,

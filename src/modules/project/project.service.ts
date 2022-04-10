@@ -6,7 +6,8 @@ import { UserInterface } from 'modules/user/types/user.interface'
 import { PaginationQueryType } from 'common/types/PaginationType'
 import { CreateProjectDto } from 'modules/project/dto/createProject.dto'
 import { UserService } from 'modules/user/user.service'
-import { ERROR_FORBIDDEN } from 'common/constants/errors'
+import { ENTITY_NOT_FOUND, ERROR_FORBIDDEN } from 'common/constants/errors'
+import { UpdateProjectDtoDto } from 'modules/project/dto/updateProjectDto.dto'
 
 @Injectable()
 export class ProjectService {
@@ -20,9 +21,7 @@ export class ProjectService {
         const { limit = 10, page = 1 } = params
 
         const projects = await this.projectRepository
-            .createQueryBuilder()
-            .select('project')
-            .from(ProjectEntity, 'project')
+            .createQueryBuilder('project')
             .where('project.author.id = :id', { id: user.id })
 
         const count = await projects.getCount()
@@ -42,9 +41,8 @@ export class ProjectService {
 
     async findProject(user: UserInterface, id: number) {
         return await this.projectRepository
-            .createQueryBuilder()
-            .select('project')
-            .from(ProjectEntity, 'project')
+            .createQueryBuilder('project')
+            .leftJoinAndSelect('project.fields', 'field')
             .where('project.id = :projectId', { projectId: id })
             .andWhere('project.author.id = :userId', { userId: user.id })
             .getOne()
@@ -58,13 +56,14 @@ export class ProjectService {
         Object.assign(project, data)
 
         project.author = findUser
+        project.users = [findUser]
 
         return await this.projectRepository.save(project)
     }
 
     async updateProject(
         id: number,
-        data: CreateProjectDto,
+        data: UpdateProjectDtoDto,
         user: UserInterface,
     ) {
         const findProject = await this.projectRepository.findOne(
@@ -79,5 +78,22 @@ export class ProjectService {
         Object.assign(findProject, data)
 
         return await this.projectRepository.save(findProject)
+    }
+
+    async findProjectUsers(id: number, user: UserInterface) {
+        const findProject = await this.projectRepository.findOne(
+            { id },
+            { relations: ['users'] },
+        )
+
+        if (!findProject) {
+            throw new HttpException(ENTITY_NOT_FOUND, HttpStatus.NOT_FOUND)
+        }
+        const { users } = findProject
+
+        if (!users.find(({ id }) => id === user.id)) {
+            throw new HttpException(ERROR_FORBIDDEN, HttpStatus.FORBIDDEN)
+        }
+        return users
     }
 }
