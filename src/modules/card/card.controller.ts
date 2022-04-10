@@ -34,14 +34,13 @@ export class CardController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Post('card/:id')
+    @Post('card')
     @UsePipes(new ValidationPipe())
     async createCard(
         @Request() req: ExpressRequestInterface,
         @Body() createCardDto: CreateCardDto,
-        @Param('id') id: number,
     ): Promise<CardEntity> {
-        return this.cardService.createCard(createCardDto, req.user, id)
+        return this.cardService.createCard(createCardDto, req.user)
     }
 
     @UseGuards(JwtAuthGuard)
@@ -50,8 +49,9 @@ export class CardController {
     async updateCard(
         @Param('id', ParseIntPipe) id: number,
         @Body() updateDto: UpdateCardDto,
+        @Request() req: ExpressRequestInterface,
     ): Promise<CardEntity> {
-        return await this.cardService.updateCard(updateDto)
+        return await this.cardService.updateCard(id, updateDto, req.user)
     }
 
     @UseGuards(JwtAuthGuard)

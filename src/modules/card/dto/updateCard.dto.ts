@@ -1,5 +1,5 @@
-import { IsArray, IsEnum, IsString } from 'class-validator'
-import { CardTypeEnum, ColumnEnum } from 'modules/card/constants/enum'
+import { IsNumber, IsObject } from 'class-validator'
+import { CardTypeEnum } from 'modules/card/constants/enum'
 import { UserInterface } from 'modules/user/types/user.interface'
 
 type Field = {
@@ -9,18 +9,17 @@ type Field = {
 }
 
 export class UpdateCardDto {
-    @IsString()
-    title: string
+    @IsNumber()
+    swimlaneId: number
 
-    @IsString()
-    description: string
+    @IsNumber()
+    columnId: number
 
-    @IsEnum(CardTypeEnum)
-    type: CardTypeEnum
-
-    @IsEnum(ColumnEnum)
-    status: ColumnEnum
-
-    @IsArray()
-    fields: Field[]
+    @IsObject()
+    data: {
+        title: string
+        description: string
+        type: CardTypeEnum
+        fields: Field[]
+    }
 }

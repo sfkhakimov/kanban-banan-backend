@@ -1,16 +1,20 @@
-import { IsEnum, IsString } from 'class-validator'
-import { CardTypeEnum, ColumnEnum } from 'modules/card/constants/enum'
+import { IsNumber, IsObject } from 'class-validator'
+import { CardTypeEnum } from 'modules/card/constants/enum'
 
 export class CreateCardDto {
-    @IsString()
-    title: string
+    @IsNumber()
+    projectId: number
 
-    @IsString()
-    description: string
+    @IsNumber()
+    swimlaneId: number
 
-    @IsEnum(CardTypeEnum)
-    type: CardTypeEnum
+    @IsNumber()
+    columnId: number
 
-    @IsEnum(ColumnEnum)
-    status?: ColumnEnum
+    @IsObject()
+    data: {
+        title: string
+        description: string
+        type: CardTypeEnum
+    }
 }

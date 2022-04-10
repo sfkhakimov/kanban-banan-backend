@@ -7,11 +7,12 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm'
 import { UserEntity } from 'modules/user/user.entity'
-import { CardTypeEnum, ColumnEnum } from 'modules/card/constants/enum'
+import { CardTypeEnum } from 'modules/card/constants/enum'
 import { UserInterface } from 'modules/user/types/user.interface'
 import { SwimlaneEntity } from 'modules/swimlane/swimlane.entity'
 import { EntityFieldEntity } from 'modules/entity-field/entity-field.entity'
 import { ProjectEntity } from 'modules/project/project.entity'
+import { ColumnEntity } from 'modules/column/column.entity'
 
 @Entity({ name: 'cards ' })
 export class CardEntity {
@@ -27,9 +28,6 @@ export class CardEntity {
     @Column({ type: 'enum', enum: CardTypeEnum, default: CardTypeEnum.Normal })
     type: CardTypeEnum
 
-    @Column({ type: 'enum', enum: ColumnEnum, default: ColumnEnum.Open })
-    status: ColumnEnum
-
     @ManyToOne(() => UserEntity, (user) => user.cards)
     author: UserInterface
 
@@ -42,4 +40,7 @@ export class CardEntity {
     @ManyToMany(() => EntityFieldEntity, { cascade: true, onDelete: 'CASCADE' })
     @JoinTable()
     fields: EntityFieldEntity[]
+
+    @ManyToOne(() => ColumnEntity, (column) => column.cards)
+    column: ColumnEntity
 }

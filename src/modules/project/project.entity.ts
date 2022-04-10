@@ -12,6 +12,7 @@ import { SwimlaneEntity } from 'modules/swimlane/swimlane.entity'
 import { UserInterface } from 'modules/user/types/user.interface'
 import { EntityFieldEntity } from 'modules/entity-field/entity-field.entity'
 import { CardEntity } from 'modules/card/card.entity'
+import { ColumnEntity } from 'modules/column/column.entity'
 
 @Entity({ name: 'projects' })
 export class ProjectEntity {
@@ -40,4 +41,7 @@ export class ProjectEntity {
     @ManyToMany(() => EntityFieldEntity, { cascade: true, onDelete: 'CASCADE' })
     @JoinTable()
     fields: EntityFieldEntity[]
+
+    @OneToMany(() => ColumnEntity, (column) => column.project)
+    columns: ColumnEntity[]
 }

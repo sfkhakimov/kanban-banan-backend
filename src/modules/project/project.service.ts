@@ -48,6 +48,34 @@ export class ProjectService {
             .getOne()
     }
 
+    async findProjectById(id: number, userId: number) {
+        const project = await this.projectRepository.findOne(
+            { id },
+            {
+                relations: [
+                    'author',
+                    'columns',
+                    'users',
+                    'cards',
+                    'swimlanes',
+                    'fields',
+                ],
+            },
+        )
+
+        if (!project) {
+            throw new HttpException(ENTITY_NOT_FOUND, HttpStatus.NOT_FOUND)
+        }
+
+        const { users } = project
+
+        if (!users.find(({ id }) => id === userId)) {
+            throw new HttpException(ERROR_FORBIDDEN, HttpStatus.FORBIDDEN)
+        }
+
+        return project
+    }
+
     async createProject(data: CreateProjectDto, user: UserInterface) {
         const project = new ProjectEntity()
 

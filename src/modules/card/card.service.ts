@@ -7,25 +7,35 @@ import { UserInterface } from 'modules/user/types/user.interface'
 import { ENTITY_NOT_FOUND, ERROR_FORBIDDEN } from 'common/constants/errors'
 import { UpdateCardDto } from 'modules/card/dto/updateCard.dto'
 import { ResponseType } from 'common/types/ResponseType'
-import { SwimlaneService } from 'modules/swimlane/swimlane.service'
+import { ProjectService } from 'modules/project/project.service'
 
 @Injectable()
 export class CardService {
     constructor(
         @InjectRepository(CardEntity)
         private readonly cardRepository: Repository<CardEntity>,
-        private readonly swimlaneService: SwimlaneService,
+        private readonly projectService: ProjectService,
     ) {}
 
     async getCard(id: number, user: UserInterface): Promise<CardEntity> {
         const card = await this.cardRepository.findOne(
             { id },
-            { relations: ['author', 'fields'] },
+            {
+                relations: [
+                    'author',
+                    'fields',
+                    'project',
+                    'column',
+                    'swimlane',
+                ],
+            },
         )
 
-        if (card.author.id !== user.id) {
-            throw new HttpException(ERROR_FORBIDDEN, HttpStatus.FORBIDDEN)
+        if (!card) {
+            throw new HttpException(ENTITY_NOT_FOUND, HttpStatus.NOT_FOUND)
         }
+
+        await this.projectService.findProjectById(card.project.id, user.id)
 
         return card
     }
@@ -33,28 +43,81 @@ export class CardService {
     async createCard(
         createCardDto: CreateCardDto,
         user: UserInterface,
-        id: number,
     ): Promise<CardEntity> {
-        const swimlane = await this.swimlaneService.findSwimlaneById(user, id)
+        const { projectId, swimlaneId, columnId, data } = createCardDto
+        const project = await this.projectService.findProjectById(
+            projectId,
+            user.id,
+        )
 
-        if (!swimlane) {
+        const { swimlanes, columns } = project
+
+        const swimlane = swimlanes.find(({ id }) => id === swimlaneId)
+
+        const column = columns.find(({ id }) => id === columnId)
+
+        if (!swimlane || !column) {
             throw new HttpException(ENTITY_NOT_FOUND, HttpStatus.NOT_FOUND)
         }
 
         const card = new CardEntity()
 
-        Object.assign(card, createCardDto)
+        Object.assign(card, data)
 
         card.author = user
         card.swimlane = swimlane
-        card.fields = [...swimlane.project.fields]
-        card.project = swimlane.project
+        card.column = column
+        card.fields = [...project.fields]
+        card.project = project
 
-        return await this.cardRepository.save(card)
+        const savedCard = await this.cardRepository.save(card)
+
+        delete savedCard.project
+
+        return savedCard
     }
 
-    async updateCard(updateCardDto: UpdateCardDto): Promise<CardEntity> {
-        return await this.cardRepository.save(updateCardDto)
+    async updateCard(
+        id: number,
+        updateCardDto: UpdateCardDto,
+        user: UserInterface,
+    ): Promise<CardEntity> {
+        const { swimlaneId, columnId, data } = updateCardDto
+
+        const findCard = await this.cardRepository.findOne(
+            { id },
+            { relations: ['project', 'swimlane', 'column'] },
+        )
+
+        if (!findCard) {
+            throw new HttpException(ENTITY_NOT_FOUND, HttpStatus.NOT_FOUND)
+        }
+
+        const {
+            project: { id: projectId },
+        } = findCard
+
+        const project = await this.projectService.findProjectById(
+            projectId,
+            user.id,
+        )
+
+        const { swimlanes, columns } = project
+
+        const swimlane = swimlanes.find(({ id }) => id === swimlaneId)
+
+        const column = columns.find(({ id }) => id === columnId)
+
+        if (!swimlane || !column) {
+            throw new HttpException(ENTITY_NOT_FOUND, HttpStatus.NOT_FOUND)
+        }
+
+        Object.assign(findCard, data)
+
+        findCard.swimlane = swimlane
+        findCard.column = column
+
+        return await this.cardRepository.save(findCard)
     }
 
     async deleteCard(id: number): Promise<ResponseType> {
