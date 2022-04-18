@@ -48,7 +48,7 @@ export class ProjectService {
             .getOne()
     }
 
-    async findProjectById(id: number, userId: number) {
+    async findProjectById(id: number, userId: number, withError = true) {
         const project = await this.projectRepository.findOne(
             { id },
             {
@@ -64,12 +64,14 @@ export class ProjectService {
         )
 
         if (!project) {
+            if (!withError) return null
             throw new HttpException(ENTITY_NOT_FOUND, HttpStatus.NOT_FOUND)
         }
 
         const { users } = project
 
         if (!users.find(({ id }) => id === userId)) {
+            if (!withError) return null
             throw new HttpException(ERROR_FORBIDDEN, HttpStatus.FORBIDDEN)
         }
 

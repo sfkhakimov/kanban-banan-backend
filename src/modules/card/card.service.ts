@@ -8,6 +8,8 @@ import { ENTITY_NOT_FOUND, ERROR_FORBIDDEN } from 'common/constants/errors'
 import { UpdateCardDto } from 'modules/card/dto/updateCard.dto'
 import { ResponseType } from 'common/types/ResponseType'
 import { ProjectService } from 'modules/project/project.service'
+import { EventsGateway } from 'modules/events/events.gateway'
+import { SocketTypeEnum } from 'modules/events/constants/enum'
 
 @Injectable()
 export class CardService {
@@ -15,6 +17,7 @@ export class CardService {
         @InjectRepository(CardEntity)
         private readonly cardRepository: Repository<CardEntity>,
         private readonly projectService: ProjectService,
+        private readonly eventsGateway: EventsGateway,
     ) {}
 
     async getCard(id: number, user: UserInterface): Promise<CardEntity> {

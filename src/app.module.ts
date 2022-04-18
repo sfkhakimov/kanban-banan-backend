@@ -9,6 +9,7 @@ import { SwimlaneModule } from 'modules/swimlane/swimlane.module'
 import { ProjectModule } from './modules/project/project.module';
 import { EntityFieldModule } from './modules/entity-field/entity-field.module';
 import { ColumnModule } from './modules/column/column.module';
+import { EventsModule } from './modules/events/events.module';
 
 @Module({
     imports: [
@@ -21,6 +22,7 @@ import { ColumnModule } from './modules/column/column.module';
         ProjectModule,
         EntityFieldModule,
         ColumnModule,
+        EventsModule,
     ],
 })
 export class AppModule {}

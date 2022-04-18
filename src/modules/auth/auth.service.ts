@@ -30,4 +30,8 @@ export class AuthService {
             access_token: this.jwtService.sign({ ...user }),
         }
     }
+
+    async verifyToken(token) {
+        return await this.jwtService.verify(token)
+    }
 }
